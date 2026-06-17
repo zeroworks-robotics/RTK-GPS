@@ -1,0 +1,99 @@
+/**:
+  ros__parameters:
+
+    # ─────────────────────────────────────────────
+    # 디바이스 / 통신
+    # ─────────────────────────────────────────────
+    device: /dev/tty_Ardusimple
+    frame_id: gps
+
+    # u-center CFG-PRT에서 수신기 baudrate를 먼저 460800으로 변경 후 적용
+    # 9600은 NavPVT+RTCM+NMEA 동시 전송 시 오버플로우 발생
+    uart1:
+      baudrate: 460800
+
+    # ─────────────────────────────────────────────
+    # 측위 갱신 속도 — 10Hz
+    # ─────────────────────────────────────────────
+    rate:
+      meas: 100    # 100ms = 10Hz
+      nav: 1
+
+    # ─────────────────────────────────────────────
+    # TMODE3 — Rover 필수 설정
+    # ─────────────────────────────────────────────
+    # 가이드 기본값 1(Survey-in/Base)은 Rover에서 반드시 0으로 변경
+    tmode3: 0
+
+    # ─────────────────────────────────────────────
+    # 운동 모델 — string 타입
+    # ─────────────────────────────────────────────
+    # 유효값: portable / stationary / pedestrian / automotive
+    #         sea / airborne1 / airborne2 / airborne4 / wristwatch
+    # 지상 로봇: automotive  |  드론: airborne1
+    dynamic_model: automotive
+
+    # ─────────────────────────────────────────────
+    # GNSS 성좌 활성화 — bool 플래그
+    # ─────────────────────────────────────────────
+    # 이 방식으로 yaml에서 직접 설정 가능 (배열 불필요)
+    # 현재 bag에서 위성 최대 7개 → 아래 설정으로 15~20개 확보 가능
+    gnss:
+      gps: true        # GPS (미국) — 필수
+      galileo: true    # Galileo (EU) — RTK Fix 수렴 핵심
+      glonass: true    # GLONASS (러시아) — 한국 하늘 가시성 우수
+      beidou: false    # BeiDou — GLONASS와 채널 경합, 우선 비활성화
+      sbas: true       # SBAS — DGNSS 보정 수신
+      imes: false
+      qzss: true       # QZSS — 일본/한국 추가 위성 (현재 bag에서 수신 확인됨)
+      qzss_sig_cfg: 1
+
+    # ─────────────────────────────────────────────
+    # 발행 토픽
+    # ─────────────────────────────────────────────
+    publish:
+      all: false
+
+      nav:
+        all: false
+        pvt: true         # carr_soln(RTK 상태), 위치, 속도, 시각
+        relposned: true   # RTK 상대위치 (베이스 대비 NED)
+        sat: true         # 위성별 신호 품질
+        status: true      # Fix 타입, DGNSS 여부
+        cov: true         # 위치 공분산 (EKF 입력용)
+        clock: false
+        timegps: false
+        timeutc: false
+        heading: true     # 듀얼 안테나 방위각
+        svin: false
+
+      rxm:
+        rtcm: true        # RTCM 수신 품질 모니터링
+
+      mon:
+        hw: true          # 안테나 상태(aStatus), AGC, 노이즈
+
+      aid:
+        alm: false
+        eph: false
+
+    # ─────────────────────────────────────────────
+    # RTCM 입력
+    # ─────────────────────────────────────────────
+    rtcm:
+      frame_id: gps
+
+    # ─────────────────────────────────────────────
+    # 진단
+    # ─────────────────────────────────────────────
+    diagnostic_updater:
+      period: 1.0
+
+    # ─────────────────────────────────────────────
+    # 기타
+    # ─────────────────────────────────────────────
+    debug: 0
+    inf:
+      all: false
+    clear_bbr: false
+    save_on_shutdown: false
